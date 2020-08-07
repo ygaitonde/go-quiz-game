@@ -21,6 +21,10 @@ func main() {
 	}
 	problems := parseLines(lines)
 	fmt.Println(problems)
+	
+	for i, problem := range problems {
+		fmt.Printf("Problem #%d: %s = \n", i+1, problem.q)
+	}
 }
 
 type problem struct {
