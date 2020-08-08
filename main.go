@@ -23,17 +23,28 @@ func main() {
 		exit("Failed to parse the provided CSV file")
 	}
 	problems := parseLines(lines)
-	fmt.Println(problems)
 	
+	timer:= time.NewTimer(time.Duration(*timeLimit) * time.Second)
 	correct := 0
 	for i, problem := range problems {
 		fmt.Printf("Problem #%d: %s = \n", i+1, problem.q)
-		var answer string
-		fmt.Scanf("%s\n", &answer)
-		if answer == problem.a {
-			correct++
-			fmt.Println("Correct!")
+		answerCh := make(chan string)
+		go func() {
+			var answer string
+			fmt.Scanf("%s\n", &answer)
+			answerCh <- answer
+		}()
+		select {
+		case <-timer.C:
+			fmt.Printf("You scored %d out of %d", correct, len(problems))
+			return
+		case answer := <- answerCh: 
+			fmt.Scanf("%s\n", &answer)
+			if answer == problem.a {
+				correct++
+			}
 		}
+
 	}
 	fmt.Printf("You scored %d out of %d", correct, len(problems))
 }
